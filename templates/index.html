@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Watch Together</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">🍿 Watch Together</div>
+    <div id="connection" class="pill">Connecting…</div>
+  </header>
+
+  <main>
+    <section id="home" class="card home">
+      <h1>Watch the same movie together.</h1>
+      <p class="muted">Create a private room, upload your video, and invite someone anywhere.</p>
+      <div class="row">
+        <button id="createBtn" class="primary">Create room</button>
+        <input id="joinInput" placeholder="WATCH-ABC123">
+        <button id="joinBtn">Join room</button>
+      </div>
+      <p class="tiny">Supported: MP4, WebM, MOV, M4V, MKV, AVI • Max 3 GiB</p>
+    </section>
+
+    <section id="room" class="hidden">
+      <div class="roombar card">
+        <div>
+          <div class="tiny">ROOM</div>
+          <strong id="roomId"></strong>
+        </div>
+        <div class="room-actions">
+          <span id="viewerCount" class="pill">0 watching</span>
+          <span id="callCount" class="pill">Call: 0/2</span>
+          <button id="copyBtn">Copy invite</button>
+          <button id="readyBtn">✓ I'm ready</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card video-card">
+          <div id="videoWrap" class="video-wrap">
+            <div id="emptyVideo" class="empty">
+              <div class="big">🎬</div>
+              <h2>Upload a movie</h2>
+              <p>Both people will watch the same uploaded file.</p>
+            </div>
+            <video id="video" controls playsinline preload="metadata" class="hidden"></video>
+            <button id="pipBtn" class="pip-btn hidden" title="Open mini player">▣ Mini player</button>
+          </div>
+
+          <div id="movieMode" class="movie-mode">
+            <span class="mode-dot"></span>
+            <span id="movieModeText">Movie mode</span>
+            <span class="tiny">When voice chat is unmuted, the movie pauses automatically.</span>
+          </div>
+
+          <div id="uploadBox" class="upload-box">
+            <input id="fileInput" type="file" accept="video/*,.mkv,.avi">
+            <div id="fileMeta" class="muted">Choose a video up to 3 GiB.</div>
+            <div class="progress"><div id="progressBar"></div></div>
+            <div class="progress-text">
+              <span id="progressPct">0%</span>
+              <span id="uploadedText">0 B / 0 B</span>
+            </div>
+            <div class="stats">
+              <span>Speed <b id="speed">—</b></span>
+              <span>Average <b id="avgSpeed">—</b></span>
+              <span>ETA <b id="eta">—</b></span>
+              <span>Chunk <b id="chunkSize">50 MB</b></span>
+            </div>
+            <div class="upload-buttons">
+              <button id="startUpload" class="primary">Start upload</button>
+              <button id="pauseUpload" disabled>Pause</button>
+              <button id="cancelUpload" disabled>Cancel</button>
+            </div>
+            <div id="uploadStatus" class="tiny"></div>
+          </div>
+        </section>
+
+        <aside class="side-column">
+          <section class="card call-card">
+            <div class="call-head">
+              <div>
+                <strong>Video & Voice Call</strong>
+                <div id="callStatus" class="tiny">Not connected</div>
+              </div>
+              <button id="joinCallBtn" class="primary">Join call</button>
+            </div>
+
+            <div class="call-videos">
+              <div class="call-video-box">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <span class="video-label">Partner</span>
+              </div>
+              <div class="call-video-box local">
+                <video id="localVideo" autoplay muted playsinline></video>
+                <span class="video-label">You</span>
+              </div>
+            </div>
+
+            <div class="call-controls">
+              <button id="muteBtn" disabled>🎙️ Mute</button>
+              <button id="cameraBtn" disabled>📷 Camera off</button>
+              <button id="leaveCallBtn" disabled class="danger">☎ Leave</button>
+            </div>
+
+            <div id="callNotice" class="call-notice">
+              Voice chat is built into the video call. Mic starts muted so the movie can play.
+            </div>
+          </section>
+
+          <aside class="card chat-card">
+            <div class="chat-head"><strong>Chat</strong><span id="readyStatus" class="tiny"></span></div>
+            <div id="messages" class="messages"></div>
+            <div class="reactions">
+              <button data-emoji="❤️">❤️</button><button data-emoji="😂">😂</button>
+              <button data-emoji="🔥">🔥</button><button data-emoji="😍">😍</button>
+              <button data-emoji="👏">👏</button><button data-emoji="😮">😮</button>
+            </div>
+            <div class="chat-input">
+              <input id="nameInput" placeholder="Your name" maxlength="40">
+              <input id="chatInput" placeholder="Type a message…" maxlength="500">
+              <button id="sendBtn" class="primary">Send</button>
+            </div>
+          </aside>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast"></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
